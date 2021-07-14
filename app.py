@@ -30,10 +30,6 @@ def get_auth():
 def index():
     return redirect(url_for('redirect_page'))
 
-@app.route('/verify')
-def verify():
-    return '<p>' + environ.get('SPOTIPY_CLIENT_ID') + '</p>'
-
 @app.route('/redirect')
 def redirect_page():
     if not session.get('uuid'):
@@ -45,7 +41,7 @@ def redirect_page():
     if request.args.get("code"):
         # Step 3. Being redirected from Spotify auth page
         auth_manager.get_access_token(request.args.get("code"))
-        return redirect('/')
+        return redirect('/redirect')
 
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         # Step 2. Display sign in link when no token
