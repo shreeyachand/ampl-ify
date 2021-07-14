@@ -30,6 +30,10 @@ def get_auth():
 def index():
     return redirect(url_for('redirect_page'))
 
+@app.route('/test')
+def test():
+    return str(url_for("redirect_page", _external=True))
+
 @app.route('/redirect')
 def redirect_page():
     if not session.get('uuid'):
