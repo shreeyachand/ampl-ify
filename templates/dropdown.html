@@ -6,12 +6,13 @@
 {% endif %}
 
 {% block content %}
+<title>spoti-flask</title>
 <center>
     <br>
-    <form class="form-inline"  method="POST" action="{{ url_for('playlists') }}">
-        <div class="form-group">
-                <select name="comp_select" class="form-select">
-                    <option></option>
+    <form class="justify-content-center form-inline" method="POST" action="{{ url_for('playlists') }}">
+        <div class="">
+                <select name="comp_select" class="form-select" id="selection">
+                    <option value="">choose a playlist</option>
                 {% for playlist in playlist_data %}
                     <option value="{{ playlist['id'] }}">{{playlist['name']}}</option>
                 {% endfor %}
@@ -27,7 +28,10 @@
         object-fit:cover;
     }
 </style>
-<img src="{{ id | image }}" id="playlist_cover">
-<p>{{ id | title}}</p>
+    {% if id != "" %}
+        <img src="{{ id | image }}" id="playlist_cover">
+        <p>{{ id | title}}</p>
+        {% block tracks %}{% endblock %}
+    {% endif %}
 {% endif %}
 {% endblock %}

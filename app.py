@@ -32,7 +32,7 @@ def index():
 
 @app.route('/test')
 def test():
-    return str(url_for("redirect_page", _external=True))
+    return "test()"
 
 @app.route('/redirect')
 def redirect_page():
@@ -81,7 +81,7 @@ def playlists():
 
     if request.method == "POST":
         songid = request.form.get('comp_select')
-        return render_template('dropdown.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()), id=songid)
+        return render_template('tracks.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()), id=songid)
     else:
         return render_template('dropdown.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()))
 
@@ -113,7 +113,7 @@ def current_user():
 
 if __name__ == '__main__':
     app.run(threaded=True, port=int(os.environ.get("PORT",
-                                        os.environ.get("SPOTIPY_REDIRECT_URI", 8080).split(":")[-1])))
+                                    os.environ.get("SPOTIPY_REDIRECT_URI", 8080).split(":")[-1])))
 
 # filters used to render playlist pic and title
 @app.template_filter('image')
@@ -136,6 +136,8 @@ def get_playlist_img(id):
     data = sp.playlist(id)
     return data['name']
 
-@app.template_filter('length')
-def get_list_length(item):
-    return len(item)
+@app.template_filter('tracks')
+def get_playlist_tracks(id):
+    cache_handler, auth_manager = get_auth()
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    return sp.playlist_items(id)

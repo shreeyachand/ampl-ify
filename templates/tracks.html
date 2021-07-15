@@ -1,0 +1,31 @@
+{% extends "dropdown.html" %}
+{% block tracks %}
+<script>
+    var txt = document.getElementById("allTracks");
+    function showTracks() {
+        txt = document.getElementById("allTracks");
+        btn = document.getElementById("trackBtn")
+        if (txt.style.display === "none") {
+            txt.style.display = "block";
+            btn.value = "hide tracks";
+        } else {
+            txt.style.display = "none";
+            btn.value = "show tracks";
+        }
+    }
+    txt.style.display = "none";
+</script>
+<input type="button" value="show tracks" id="trackBtn" onclick="showTracks()"/>
+
+{% with tracks = (id | tracks)['items'] %}
+<div style="display: none" id="allTracks">
+{% for track in tracks %}
+    <br>
+    {{ track['track']['name'] }} -
+    {% for artist in track['track']['artists'] %}
+        {{ artist['name'] }},
+    {% endfor %}
+{% endfor %}
+</div>
+{% endwith %}
+{% endblock %}
