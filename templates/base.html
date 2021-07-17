@@ -19,7 +19,7 @@
                 <li class="nav-link"><img id="pfp" width="50px" src="{% block profile_pic %}{% endblock %}"></li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {% block user %} {% endblock %}
+                    {{user_info['display_name']}}
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item text-danger" href="{{ url_for('sign_out') }}">log out</a>

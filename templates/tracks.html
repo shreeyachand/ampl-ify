@@ -1,5 +1,9 @@
 {% extends "dropdown.html" %}
 {% block tracks %}
+<form class="justify-content-center form-inline" method="POST" action="{{ url_for('recommendations') }}" name="myform">
+    <button class="btn btn-default" onclick="myform.submit()">extend playlist</button>
+    <input style="display: none" name="playid" value="{{id}}">
+</form>
 <script>
     var txt = document.getElementById("allTracks");
     function showTracks() {
@@ -17,6 +21,7 @@
 </script>
 <input type="button" value="show tracks" id="trackBtn" onclick="showTracks()"/>
 
+<p name="playid" style="display: none">{{id}}</p>
 {% with tracks = (id | tracks)['items'] %}
 <div style="display: none" id="allTracks">
 {% for track in tracks %}

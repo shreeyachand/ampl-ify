@@ -2,3 +2,6 @@
 .spotify_caches/
 __pycache__/
 .env
+.ipynb_checkpoints/
+.tracks.csv
+.nnmodel.pkl

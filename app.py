@@ -1,11 +1,11 @@
-import os
 from os import environ
 from typing import Type
 from flask import Flask, session, request, redirect, url_for, render_template
 from flask_session import Session
 from requests import auth
-import spotipy
-import uuid
+import spotipy, uuid, os, pickle
+import numpy as np
+import pandas as pd
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(64)
@@ -29,10 +29,6 @@ def get_auth():
 @app.route('/')
 def index():
     return redirect(url_for('redirect_page'))
-
-@app.route('/test')
-def test():
-    return "test()"
 
 @app.route('/redirect')
 def redirect_page():
@@ -80,8 +76,8 @@ def playlists():
     results = sp.current_user_playlists()
 
     if request.method == "POST":
-        songid = request.form.get('comp_select')
-        return render_template('tracks.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()), id=songid)
+        playlistid = request.form.get('comp_select')
+        return render_template('tracks.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()), id=playlistid)
     else:
         return render_template('dropdown.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()))
 
@@ -96,8 +92,8 @@ def currently_playing():
     cache_handler, auth_manager = get_auth()
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         return redirect('/')
-    spotify = spotipy.Spotify(auth_manager=auth_manager)
-    track = spotify.current_user_playing_track()
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    track = sp.current_user_playing_track()
     if not track is None:
         return track
     return "No track currently playing."
@@ -108,12 +104,9 @@ def current_user():
     cache_handler, auth_manager = get_auth()
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         return redirect('/')
-    spotify = spotipy.Spotify(auth_manager=auth_manager)
-    return spotify.current_user()
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    return sp.current_user()
 
-if __name__ == '__main__':
-    app.run(threaded=True, port=int(os.environ.get("PORT",
-                                    os.environ.get("SPOTIPY_REDIRECT_URI", 8080).split(":")[-1])))
 
 # filters used to render playlist pic and title
 @app.template_filter('image')
@@ -139,5 +132,47 @@ def get_playlist_img(id):
 @app.template_filter('tracks')
 def get_playlist_tracks(id):
     cache_handler, auth_manager = get_auth()
+    if not auth_manager.validate_token(cache_handler.get_cached_token()):
+        return redirect('/')
     sp = spotipy.Spotify(auth_manager=auth_manager)
     return sp.playlist_items(id)
+
+@app.route('/recommendations', methods=["GET", "POST"])
+def recommendations():
+    cache_handler, auth_manager = get_auth()
+    if not auth_manager.validate_token(cache_handler.get_cached_token()):
+        return redirect('/')
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    if request.method == "POST":
+        id = request.form.get("playid")
+        return render_template("reccs.html", user_info=sp.current_user(), pfp=get_pfp(sp.current_user()), id=id)
+
+@app.template_filter('extract')
+def extract_playlist_features(id):
+    cache_handler, auth_manager = get_auth()
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    tracks = sp.playlist_items(id)['items']
+    columns = ['popularity', 'danceability', 'energy', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
+    df = pd.DataFrame(columns=columns)
+    for i, track in enumerate(tracks):
+        id = track['track']['id']
+        feats = sp.audio_features(id)
+        vals = [track['track']['popularity']]
+        for col in columns:
+            if col != 'popularity':
+                vals.append(feats[0][col])
+        df.loc[i] = np.array(vals)
+    nn = pickle.load(open('.nnmodel.pkl', 'rb'))
+    dist, idx = nn.radius_neighbors(np.array(df.mean(axis=0)).reshape(1, -1), 1)
+    return list(pd.read_csv('track_ids.csv')['id'][idx[0]])
+
+@app.template_filter('trackname')
+def trackname(id):
+    cache_handler, auth_manager = get_auth()
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    track_info = sp.tracks(id)
+    return list(track_info['tracks'])
+
+if __name__ == '__main__':
+    app.run(threaded=True, port=int(os.environ.get("PORT",
+                                    os.environ.get("SPOTIPY_REDIRECT_URI", 8080).split(":")[-1])))

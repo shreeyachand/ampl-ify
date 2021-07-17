@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% if pfp %}
+{% block profile_pic %} {{pfp}} {% endblock %}
+{% endif %}
+{% block content %}
+<center>
+{% for track in id | extract | trackname %}
+{{track['name']}}
+<br>
+{% endfor %}
+{% endblock %}
