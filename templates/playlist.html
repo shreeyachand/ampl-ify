@@ -13,7 +13,7 @@
         {% block tracks %}{% endblock %}
     {% endif %}
 <form class="justify-content-center form-inline" method="POST" action="{{ url_for('recommendations') }}" name="myform">
-    <button class="btn btn-default" onclick="myform.submit()">recommend songs</button>
+    <button class="btn btn-outline-secondary" onclick="myform.submit()">recommend songs</button>
     <input style="display: none" name="playid" value="{{id}}">
 </form>
 <script>
@@ -31,8 +31,7 @@
     }
     txt.style.display = "none";
 </script>
-<input type="button" value="show tracks" id="trackBtn" onclick="showTracks()"/>
-
+<input class="btn btn-outline-secondary" type="button" value="show tracks" id="trackBtn" onclick="showTracks()"/>
 <p name="playid" style="display: none">{{id}}</p>
 {% with tracks = (id | tracks)['items'] %}
 <div style="display: none" id="allTracks">
