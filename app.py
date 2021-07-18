@@ -155,13 +155,14 @@ def extract_playlist_features(id):
     columns = ['popularity', 'danceability', 'energy', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
     df = pd.DataFrame(columns=columns)
     for i, track in enumerate(tracks):
-        id = track['track']['id']
-        feats = sp.audio_features(id)
-        vals = [track['track']['popularity']]
-        for col in columns:
-            if col != 'popularity':
-                vals.append(feats[0][col])
-        df.loc[i] = np.array(vals)
+        if track['track']['type'] != 'episode':
+            id = track['track']['id']
+            feats = sp.audio_features(id)
+            vals = [track['track']['popularity']]
+            for col in columns:
+                if col != 'popularity':
+                    vals.append(feats[0][col])
+            df.loc[i] = np.array(vals)
     nn = pickle.load(open('.nnmodel.pkl', 'rb'))
     dist, idx = nn.radius_neighbors(np.array(df.mean(axis=0)).reshape(1, -1), 1)
     return list(pd.read_csv('track_ids.csv')['id'][idx[0]])
@@ -181,9 +182,18 @@ def add():
         play_id = request.form.get('playlistId')
         track_ids = request.form.get('trackIds').split(',')
         sp.playlist_add_items(play_id, track_ids)
-        return "Added items!"
+        return render_template("added.html", user_info=sp.current_user(), pfp=get_pfp(sp.current_user()))
     else:
         return redirect('/playlists')
+
+@app.route('/test')
+def test():
+    id='0X6KLKSzNHBOgblalNejHa'
+    cache_handler, auth_manager = get_auth()
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    tracks = sp.playlist_items(id)['items']
+    return str(tracks[2]['track']['type'])
+
 if __name__ == '__main__':
     app.run(threaded=True, port=int(os.environ.get("PORT",
                                     os.environ.get("SPOTIPY_REDIRECT_URI", 8080).split(":")[-1])))

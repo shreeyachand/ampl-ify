@@ -1,5 +1,7 @@
-{% extend "base.html" %}
+{% extends "base.html" %}
 {% block content %}
-"added songs to playlist!"
+<center>
+added songs to playlist!
+<br>
 <a href="{{ url_for('playlists') }}">back to playlists</a>
 {% endblock %}
