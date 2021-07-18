@@ -24,7 +24,7 @@ def get_auth():
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
     return cache_handler, spotipy.oauth2.SpotifyOAuth(client_id=environ.get("SPOTIPY_CLIENT_ID"),
     client_secret=environ.get("SPOTIPY_CLIENT_SECRET"),
-    redirect_uri=url_for("redirect_page", _external=True), scope='user-read-currently-playing playlist-modify-private', cache_handler=cache_handler, show_dialog=True)
+    redirect_uri=url_for("redirect_page", _external=True), scope='user-read-currently-playing playlist-modify-private playlist-modify-public user-library-read', cache_handler=cache_handler, show_dialog=True)
 
 @app.route('/')
 def index():
@@ -77,7 +77,7 @@ def playlists():
 
     if request.method == "POST":
         playlistid = request.form.get('comp_select')
-        return render_template('tracks.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()), id=playlistid)
+        return render_template('playlist.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()), id=playlistid)
     else:
         return render_template('dropdown.html', playlist_data=results['items'], user_info=sp.current_user(), pfp=get_pfp(sp.current_user()))
 
@@ -173,6 +173,17 @@ def trackname(id):
     track_info = sp.tracks(id)
     return list(track_info['tracks'])
 
+@app.route('/add', methods=["GET", "POST"])
+def add():
+    cache_handler, auth_manager = get_auth()
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    if request.method == "POST":
+        play_id = request.form.get('playlistId')
+        track_ids = request.form.get('trackIds').split(',')
+        sp.playlist_add_items(play_id, track_ids)
+        return "Added items!"
+    else:
+        return redirect('/playlists')
 if __name__ == '__main__':
     app.run(threaded=True, port=int(os.environ.get("PORT",
                                     os.environ.get("SPOTIPY_REDIRECT_URI", 8080).split(":")[-1])))
