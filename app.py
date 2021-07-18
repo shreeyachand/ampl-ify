@@ -24,7 +24,7 @@ def get_auth():
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
     return cache_handler, spotipy.oauth2.SpotifyOAuth(client_id=environ.get("SPOTIPY_CLIENT_ID"),
     client_secret=environ.get("SPOTIPY_CLIENT_SECRET"),
-    redirect_uri=url_for("redirect_page", _external=True), scope='user-read-currently-playing playlist-modify-private playlist-modify-public user-library-read', cache_handler=cache_handler, show_dialog=True)
+    redirect_uri=url_for("redirect_page", _external=True), scope='playlist-modify-public user-library-read', cache_handler=cache_handler, show_dialog=True)
 
 @app.route('/')
 def index():
@@ -86,27 +86,6 @@ def get_pfp(info):
         return 'https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'
     else:
         return info['images'][0]['url']
-
-@app.route('/currently_playing')
-def currently_playing():
-    cache_handler, auth_manager = get_auth()
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        return redirect('/')
-    sp = spotipy.Spotify(auth_manager=auth_manager)
-    track = sp.current_user_playing_track()
-    if not track is None:
-        return track
-    return "No track currently playing."
-
-
-@app.route('/current_user')
-def current_user():
-    cache_handler, auth_manager = get_auth()
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        return redirect('/')
-    sp = spotipy.Spotify(auth_manager=auth_manager)
-    return sp.current_user()
-
 
 # filters used to render playlist pic and title
 @app.template_filter('image')
