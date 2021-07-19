@@ -1,5 +1,7 @@
 # ampl-ify
 
+Currently, the app is hosted at https://ampl-ify.herokuapp.com, but it is in development mode, so additional users needed to be added by me. Fill out [this form](https://docs.google.com/forms/d/e/1FAIpQLSeM8OUUgS0DQAx4xq5SjVxpz9AOIOKRWag70q6s8yDkpxwxhw/viewform) to become a user.
+
 ## Table of Contents
 1. [Requirements](https://github.com/shreeyachand/ampl-ify#requirements)
 2. [Installation](https://github.com/shreeyachand/ampl-ify#installation)
