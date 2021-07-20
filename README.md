@@ -33,9 +33,11 @@ SPOTIPY_CLIENT_SECRET="your client secret here"
 
 Be sure to add any other links (with /redirect) for any other places you will be hosting the app. Note the difference between **/redirect** and **/redirect/** as well as **http** and **https** when redirecting, so make sure to add all versions of the link if you encounter problems with the redirect URI.
 
-6. Create the NearestNeighbors model by running the cells in [`ModelingTracks.ipynb`](https://github.com/shreeyachand/ampl-ify/blob/main/ModelingTracks.ipynb). You don't need to run any cells after exporting the pickle model, those are a work in progress.
 
-7. Run ```flask run``` in the terminal and navigate to http://localhost:5000 to run the app!
+6. Download [this dataset](https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks?select=tracks.csv) from Kaggle as `.tracks.csv` (you can call it whatever you want as long as you change the name in the Jupyter Notebook in the next step).
+7. Create the NearestNeighbors model by running the cells in [`ModelingTracks.ipynb`](https://github.com/shreeyachand/ampl-ify/blob/main/ModelingTracks.ipynb). You don't need to run any cells after exporting the pickle model, those are a work in progress.
+
+8. Run ```flask run``` in the terminal and navigate to http://localhost:5000 to run the app!
 
 Note: The app will be in [development mode](https://developer.spotify.com/community/news/2021/05/27/improving-the-developer-and-user-experience-for-third-party-apps/) until a quota request is approved. For others using it or for testing with up to 25 other accounts, the email addresses need to be added in the dashboard.
 
