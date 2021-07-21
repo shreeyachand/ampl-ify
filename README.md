@@ -16,8 +16,8 @@ Currently, the app is hosted at https://ampl-ify.herokuapp.com, but it is in dev
 1. Log in to the [Spotify Developer dashboard](https://developer.spotify.com/dashboard/applications) and create a new app with the name and description of your liking
 2. Clone the project and create a virtual environment by running the following in the terminal:
 ```
-git clone https://github.com/shreeyachand/spoti-flask.git spoti-flask
-cd spoti-flask
+git clone https://github.com/shreeyachand/ampl-ify.git ampl-ify
+cd ampl-ify
 python3 -m venv venv
 source venv/bin/activate
 ```
