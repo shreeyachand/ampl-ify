@@ -134,7 +134,7 @@ def extract_playlist_features(id):
     columns = ['popularity', 'danceability', 'energy', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
     df = pd.DataFrame(columns=columns)
     for i, track in enumerate(tracks):
-        if track['track']['type'] != 'episode':
+        if track['track']['type'] == 'track' and track['track']['id'] != None: 
             id = track['track']['id']
             feats = sp.audio_features(id)
             vals = [track['track']['popularity']]
@@ -164,14 +164,6 @@ def add():
         return render_template("added.html", user_info=sp.current_user(), pfp=get_pfp(sp.current_user()))
     else:
         return redirect('/playlists')
-
-@app.route('/test')
-def test():
-    id='0X6KLKSzNHBOgblalNejHa'
-    cache_handler, auth_manager = get_auth()
-    sp = spotipy.Spotify(auth_manager=auth_manager)
-    tracks = sp.playlist_items(id)['items']
-    return str(tracks[2]['track']['type'])
 
 if __name__ == '__main__':
     app.run(threaded=True, port=int(os.environ.get("PORT",
