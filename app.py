@@ -142,9 +142,9 @@ def extract_playlist_features(id):
                 if col != 'popularity':
                     vals.append(feats[0][col])
             df.loc[i] = np.array(vals)
-    nn = pickle.load(open('.nnmodel.pkl', 'rb'))
+    nn = pickle.load(open('./model/nnmodel.pkl', 'rb'))
     dist, idx = nn.radius_neighbors(np.array(df.mean(axis=0)).reshape(1, -1), 1)
-    return list(pd.read_csv('track_ids.csv')['id'][idx[0]])
+    return list(pd.read_csv('./model/track_ids.csv')['id'][idx[0]])
 
 @app.template_filter('trackname')
 def trackname(id):
