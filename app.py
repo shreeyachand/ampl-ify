@@ -1,5 +1,4 @@
 from os import environ
-from typing import Type
 from flask import Flask, session, request, redirect, url_for, render_template
 from flask_session import Session
 from requests import auth
