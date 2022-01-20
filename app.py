@@ -5,6 +5,7 @@ from requests import auth
 import spotipy, uuid, os, pickle
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(64)
@@ -127,7 +128,14 @@ def recommendations():
 
 @app.template_filter('extract')
 def extract_playlist_features(id):
+    # fit the scaler to our "training" data so we can use the same scale for the user playlist tracks
+    features = ['popularity', 'danceability', 'energy', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
+    df = pd.read_csv('./model/tracks_clean.csv')
+    X = df[features]
+    scaler = StandardScaler()
+    scaler.fit(X)
     cache_handler, auth_manager = get_auth()
+
     sp = spotipy.Spotify(auth_manager=auth_manager)
     tracks = sp.playlist_items(id)['items']
     columns = ['popularity', 'danceability', 'energy', 'loudness', 'mode', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
@@ -141,9 +149,12 @@ def extract_playlist_features(id):
                 if col != 'popularity':
                     vals.append(feats[0][col])
             df.loc[i] = np.array(vals)
+    df = pd.DataFrame(scaler.transform(df))
     nn = pickle.load(open('./model/nnmodel.pkl', 'rb'))
-    dist, idx = nn.radius_neighbors(np.array(df.mean(axis=0)).reshape(1, -1), 1)
-    return list(pd.read_csv('./model/track_ids.csv')['id'][idx[0]])
+    dist, idx = nn.radius_neighbors(X=np.array(df.mean(axis=0)).reshape(1, -1), radius=1, sort_results=True)
+    l =  list(pd.read_csv('./model/track_ids.csv')['id'][idx[0]])
+    max_num = min(len(l), 25)
+    return l[:max_num]
 
 @app.template_filter('trackname')
 def trackname(id):
