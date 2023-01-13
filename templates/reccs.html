@@ -18,10 +18,15 @@
     getChecked();
 </script>
 <center>
-    <h3>some tracks recommended for your playlist "{{id | title}}"</h3>
+
+{% with tracks = id | extract | trackname %}
+{% if tracks == "NONE" %}
+<p>no tracks found to add to "{{id | title}}"</p>
+{% else %}
+<h3>some tracks recommended for your playlist "{{id | title}}"</h3>
 <form method="POST" action="{{ url_for('add') }}">
     <div id="tracks">
-{% for track in id | extract | trackname %}
+{% for track in tracks %}
 <input class="songrec" type="checkbox" value="{{track['id']}}" checked> {{track['name']}} - {{ track['artists'][0]['name'] }}
 <br>
 {% endfor %}
@@ -31,4 +36,7 @@
     <input style="display: none" id="val" name="trackIds" value="">
     <input style="display: none" name="playlistId" value="{{id}}">
 </form>
+{% endif %}
+
+{% endwith %}
 {% endblock %}

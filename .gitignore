@@ -3,6 +3,5 @@
 __pycache__/
 .env
 .ipynb_checkpoints/
-tracks.csv
-track_ids.csv
 nnmodel.pkl
+track_ids.csv

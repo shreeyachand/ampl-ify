@@ -151,6 +151,7 @@ def extract_playlist_features(id):
             df.loc[i] = np.array(vals)
     df = pd.DataFrame(scaler.transform(df))
     nn = pickle.load(open('./model/nnmodel.pkl', 'rb'))
+    # using mean here, change so it gets close ones for each song then return at most 25
     dist, idx = nn.radius_neighbors(X=np.array(df.mean(axis=0)).reshape(1, -1), radius=1, sort_results=True)
     l =  list(pd.read_csv('./model/track_ids.csv')['id'][idx[0]])
     max_num = min(len(l), 25)
@@ -158,6 +159,8 @@ def extract_playlist_features(id):
 
 @app.template_filter('trackname')
 def trackname(id):
+    if id==[]:
+        return "NONE"
     cache_handler, auth_manager = get_auth()
     sp = spotipy.Spotify(auth_manager=auth_manager)
     track_info = sp.tracks(id)
