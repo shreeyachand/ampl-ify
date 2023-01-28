@@ -35,7 +35,7 @@ SPOTIPY_CLIENT_SECRET="your client secret here"
 Be sure to add any other links (with /redirect) for any other places you will be hosting the app. Note the difference between **/redirect** and **/redirect/** as well as **http** and **https** when redirecting, so make sure to add all versions of the link if you encounter problems with the redirect URI.
 
 
-6. Create the NearestNeighbors model and download other CSVs the app will use by running ```python3 model/model.py``` in the terminal.
+6. Create the NearestNeighbors model and download other CSVs the app will use by running ```python3 model.py``` in the terminal.
 
 7. Run ```flask run``` in the terminal and navigate to http://localhost:5000 to run the app!
 
