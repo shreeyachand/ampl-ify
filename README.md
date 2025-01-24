@@ -1,5 +1,8 @@
 # ampl-ify
 
+## Demo
+https://github.com/user-attachments/assets/2476883f-05ca-4bbe-ad22-070b8dcd3c0f
+
 ## Table of Contents
 1. [Requirements](https://github.com/shreeyachand/ampl-ify#requirements)
 2. [Installation](https://github.com/shreeyachand/ampl-ify#installation)
